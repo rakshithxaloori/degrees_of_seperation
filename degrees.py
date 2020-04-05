@@ -92,8 +92,51 @@ def shortest_path(source, target):
     If no possible path, returns None.
     """
 
-    # TODO
-    raise NotImplementedError
+    # Create source node
+    source_node = Node(state = source, parent = None, action = None)
+
+    # Create a set containing all explored_nodes
+    explored_nodes = set()
+
+    # Create a queue_frontier for BFS
+    queue_frontier = QueueFrontier()
+    queue_frontier.add(source_node)
+
+    while(not queue_frontier.empty()):
+        # Take a node from the frontier
+        current_node = queue_frontier.remove()
+
+        # Check if it's the target
+        if current_node.state == target:
+            # Target achieved
+            # Make a list of movie_id, actor_id
+            path = list()
+            while current_node.state != source:
+                print(current_node.action, current_node.state)
+                path.append((current_node.action, current_node.state))
+                current_node = current_node.parent
+            path.reverse()
+            return path
+
+
+        # Add the node to the explored_nodes
+        explored_nodes.add(current_node)
+
+        # Add the neighbors of this actor to the queue_frontier, if they are not explored yet
+        for neighbor_movie_id, neighbor_actor_id in neighbors_for_person(current_node.state):
+            # Check if this movie, actor are in explored state or frontier
+            if_explored = any((node.state == neighbor_actor_id and node.action == neighbor_movie_id) for node in explored_nodes)
+            if queue_frontier.contains_state(neighbor_actor_id) or if_explored:
+                continue
+
+            # Create a new node for the neighbor
+            new_neighbor = Node(state = neighbor_actor_id, parent = current_node, action = neighbor_movie_id)
+            queue_frontier.add(new_neighbor)
+        
+
+    return None
+
+
 
 
 def person_id_for_name(name):
